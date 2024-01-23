@@ -1,0 +1,16 @@
+ENVIRONMENT=development
+
+# Discord blocks Cloudflare Workers from accessing app assets, so a proxy
+# running on a cloud VM is required. The server must accept and properly
+# route `GET /{releaseChannel}/{...path}` requests.
+DISCORD_APP_PROXY_ENDPOINT=
+DISCORD_API_TOKEN=
+
+CANARY_ROLE_ID=
+CANARY_WEBHOOK_URL=
+
+PTB_ROLE_ID=
+PTB_WEBHOOK_URL=
+
+STABLE_ROLE_ID=
+STABLE_WEBHOOK_URL=

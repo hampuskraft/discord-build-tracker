@@ -1,0 +1,12 @@
+name = "discord-build-tracker"
+compatibility_date = "2023-08-14"
+main = "src/index.ts"
+account_id = "9f98748511695a9ef6354ea2dc97af9a"
+
+[triggers]
+crons = ["*/1 * * * *"]
+
+[[d1_databases]]
+binding = "DB"
+database_name = "discord-build-tracker"
+database_id = "e853598f-ef34-490a-8a01-0edbb2066f19"
