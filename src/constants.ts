@@ -3,13 +3,13 @@ export const SCRIP_TAG_REGEX = /<script\s+src="(.*?)"/g;
 export const BUILD_INFO_REGEX = /Build Number: "\)\.concat\("(?<build_number>\d+)/;
 
 export enum ReleaseChannel {
-  CANARY = 'canary',
-  PTB = 'ptb',
-  STABLE = 'stable',
+  Canary = 'canary',
+  Ptb = 'ptb',
+  Stable = 'stable',
 }
 
 export const ReleaseChannelToString: Record<ReleaseChannel, string> = {
-  [ReleaseChannel.CANARY]: 'Canary',
-  [ReleaseChannel.PTB]: 'PTB',
-  [ReleaseChannel.STABLE]: 'Stable',
+  [ReleaseChannel.Canary]: 'Canary',
+  [ReleaseChannel.Ptb]: 'PTB',
+  [ReleaseChannel.Stable]: 'Stable',
 };

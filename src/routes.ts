@@ -8,13 +8,13 @@ export async function handleStats(_request: IRequestStrict, env: Env): Promise<R
   return json({
     total: await env.DB.prepare('select count(*) as count from builds').first('count'),
     stable: await env.DB.prepare('select count(*) as count from builds where channel=?')
-      .bind(ReleaseChannel.STABLE)
+      .bind(ReleaseChannel.Stable)
       .first('count'),
     ptb: await env.DB.prepare('select count(*) as count from builds where channel=?')
-      .bind(ReleaseChannel.PTB)
+      .bind(ReleaseChannel.Ptb)
       .first('count'),
     canary: await env.DB.prepare('select count(*) as count from builds where channel=?')
-      .bind(ReleaseChannel.CANARY)
+      .bind(ReleaseChannel.Canary)
       .first('count'),
     rollback: await env.DB.prepare('select count(*) as count from builds where rollback=1').first('count'),
   });
@@ -22,9 +22,9 @@ export async function handleStats(_request: IRequestStrict, env: Env): Promise<R
 
 export async function handleLatestAll(_request: IRequestStrict, env: Env): Promise<Response> {
   const stmt = env.DB.prepare('select * from builds where channel=? order by timestamp desc limit 1');
-  const canary = await stmt.bind(ReleaseChannel.CANARY).first<BuildRow>();
-  const ptb = await stmt.bind(ReleaseChannel.PTB).first<BuildRow>();
-  const stable = await stmt.bind(ReleaseChannel.STABLE).first<BuildRow>();
+  const canary = await stmt.bind(ReleaseChannel.Canary).first<BuildRow>();
+  const ptb = await stmt.bind(ReleaseChannel.Ptb).first<BuildRow>();
+  const stable = await stmt.bind(ReleaseChannel.Stable).first<BuildRow>();
   return json({
     canary: canary ? getBuildResponse(canary) : null,
     ptb: ptb ? getBuildResponse(ptb) : null,

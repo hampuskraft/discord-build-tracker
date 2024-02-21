@@ -3,22 +3,22 @@ import {BuildResponse, BuildRow, Env} from './types';
 
 export function getReleaseChannelRoleId(channel: ReleaseChannel, env: Env): string {
   switch (channel) {
-    case ReleaseChannel.CANARY:
+    case ReleaseChannel.Canary:
       return env.CANARY_ROLE_ID;
-    case ReleaseChannel.PTB:
+    case ReleaseChannel.Ptb:
       return env.PTB_ROLE_ID;
-    case ReleaseChannel.STABLE:
+    case ReleaseChannel.Stable:
       return env.STABLE_ROLE_ID;
   }
 }
 
 export function getReleaseChannelWebhookUrl(channel: ReleaseChannel, env: Env): string {
   switch (channel) {
-    case ReleaseChannel.CANARY:
+    case ReleaseChannel.Canary:
       return env.CANARY_WEBHOOK_URL;
-    case ReleaseChannel.PTB:
+    case ReleaseChannel.Ptb:
       return env.PTB_WEBHOOK_URL;
-    case ReleaseChannel.STABLE:
+    case ReleaseChannel.Stable:
       return env.STABLE_WEBHOOK_URL;
   }
 }

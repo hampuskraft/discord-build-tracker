@@ -1,6 +1,6 @@
 # Discord Build Tracker
 
-The Discord Build Tracker API provides semi-realtime tracking of Discord build updates across stable, PTB, and canary channels.
+Tracks the latest builds of Discord for the stable, PTB, and canary release channels every minute.
 
 **Base API URL**: `https://discord-build-tracker.hampuskraft.workers.dev`
 
@@ -10,27 +10,29 @@ The Discord Build Tracker API provides semi-realtime tracking of Discord build u
 
 | Constant | Value    |
 | -------- | -------- |
-| STABLE   | 'stable' |
-| PTB      | 'ptb'    |
-| CANARY   | 'canary' |
+| Stable   | 'stable' |
+| Ptb      | 'ptb'    |
+| Canary   | 'canary' |
 
 ## Types
 
 ### `BuildResponse`
 
-| Field        | Type    | Description                       |
-| ------------ | ------- | --------------------------------- |
-| channel      | String  | Release channel of the build      |
-| build_number | Number  | The build number                  |
-| version_hash | String  | The version hash of the build     |
-| timestamp    | Int64   | Timestamp of the build            |
-| rollback     | Boolean | Optional; true if it's a rollback |
+Timestamps are in milliseconds since the Unix epoch.
+
+| Field        | Type    | Description                      |
+| ------------ | ------- | -------------------------------- |
+| channel      | string  | The release channel.             |
+| build_number | number  | The build number.                |
+| version_hash | string  | The version hash.                |
+| timestamp    | number  | The timestamp of the build.      |
+| rollback     | boolean | Whether the build is a rollback. |
 
 ## Endpoints
 
 ### GET `/`
 
-Redirects to a specific URL.
+Redirects to the GitHub repository.
 
 #### Response
 
@@ -40,31 +42,31 @@ Redirects to `https://github.com/hampuskraft/discord-build-tracker` with a 302 s
 
 ### GET `/stats`
 
-Provides statistics about the builds.
+Fetches statistics about the build database.
 
 #### Response Schema
 
-| Field    | Type   | Description                                   |
-| -------- | ------ | --------------------------------------------- |
-| total    | Number | Total number of builds                        |
-| stable   | Number | Number of builds in the STABLE channel        |
-| ptb      | Number | Number of builds in the PTB channel           |
-| canary   | Number | Number of builds in the CANARY channel        |
-| rollback | Number | Number of builds that were marked as rollback |
+| Field    | Type   | Description                                    |
+| -------- | ------ | ---------------------------------------------- |
+| total    | number | The total number of builds in the database.    |
+| stable   | number | The number of stable builds in the database.   |
+| ptb      | number | The number of PTB builds in the database.      |
+| canary   | number | The number of canary builds in the database.   |
+| rollback | number | The number of rollback builds in the database. |
 
 ---
 
 ### GET `/latest/all`
 
-Fetches the latest build for all release channels.
+Fetches the latest build for each release channel.
 
 #### Response Schema
 
-| Field  | Type                            | Description                         |
-| ------ | ------------------------------- | ----------------------------------- |
-| canary | [BuildResponse](#buildresponse) | Latest build for the CANARY channel |
-| ptb    | [BuildResponse](#buildresponse) | Latest build for the PTB channel    |
-| stable | [BuildResponse](#buildresponse) | Latest build for the STABLE channel |
+| Field  | Type                            | Description              |
+| ------ | ------------------------------- | ------------------------ |
+| canary | [BuildResponse](#buildresponse) | The latest canary build. |
+| ptb    | [BuildResponse](#buildresponse) | The latest PTB build.    |
+| stable | [BuildResponse](#buildresponse) | The latest stable build. |
 
 ---
 
@@ -74,9 +76,9 @@ Fetches the latest build for a specific release channel.
 
 #### Path Parameters
 
-| Parameter | Type   | Description                     |
-| --------- | ------ | ------------------------------- |
-| type      | String | The type of the release channel |
+| Parameter | Type   | Description                   |
+| --------- | ------ | ----------------------------- |
+| type      | string | The release channel to fetch. |
 
 Refer to [ReleaseChannel](#releasechannel) for possible values.
 
@@ -88,17 +90,17 @@ See [BuildResponse](#buildresponse).
 
 ### GET `/search`
 
-Searches builds based on various query parameters.
+Fetches builds based on query parameters. All query parameters are optional.
 
 #### Query Parameters
 
-| Parameter | Type    | Description                                            |
-| --------- | ------- | ------------------------------------------------------ |
-| type      | String  | Optional; the type of the release channel              |
-| before    | Int64   | Optional; fetch builds before this unix timestamp (ms) |
-| after     | Int64   | Optional; fetch builds after this unix timestamp (ms)  |
-| limit     | Number  | Optional; limit for the number of results              |
-| rollback  | Boolean | Optional; filter by rollback status                    |
+| Parameter | Type    | Description                            |
+| --------- | ------- | -------------------------------------- |
+| type      | string  | The release channel to fetch.          |
+| before    | number  | The timestamp to fetch builds before.  |
+| after     | number  | The timestamp to fetch builds after.   |
+| limit     | number  | The maximum number of builds to fetch. |
+| rollback  | boolean | Whether to fetch rollback builds.      |
 
 Refer to [ReleaseChannel](#releasechannel) for `type` values.
 

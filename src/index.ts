@@ -19,8 +19,8 @@ export default {
   },
 
   async scheduled(_event: ScheduledEvent, env: Env, _ctx: ExecutionContext): Promise<void> {
-    await handleBuildUpdate(ReleaseChannel.CANARY, env);
-    await handleBuildUpdate(ReleaseChannel.PTB, env);
-    await handleBuildUpdate(ReleaseChannel.STABLE, env);
+    await handleBuildUpdate(ReleaseChannel.Canary, env);
+    await handleBuildUpdate(ReleaseChannel.Ptb, env);
+    await handleBuildUpdate(ReleaseChannel.Stable, env);
   },
 };
