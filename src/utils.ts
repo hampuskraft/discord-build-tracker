@@ -32,3 +32,17 @@ export function getBuildResponse(row: BuildRow): BuildResponse {
     rollback: row.rollback ? true : undefined,
   };
 }
+
+export function getFormattedAppEndpoint(channel: ReleaseChannel, env: Env): string {
+  if (env.DEVELOPMENT !== 'true') {
+    return `${env.DISCORD_APP_PROXY_ENDPOINT}/${channel}`;
+  }
+  switch (channel) {
+    case ReleaseChannel.Canary:
+      return 'https://canary.discord.com';
+    case ReleaseChannel.Ptb:
+      return 'https://ptb.discord.com';
+    case ReleaseChannel.Stable:
+      return 'https://discord.com';
+  }
+}

@@ -1,6 +1,10 @@
 import {ReleaseChannel} from './constants';
 
 export type Env = {
+  // If set to `true`, we'll ignore the `DISCORD_APP_PROXY_ENDPOINT` and use
+  // Discord's domains directly.
+  DEVELOPMENT?: string;
+
   // Discord blocks Cloudflare Workers from accessing app assets, so a proxy
   // running on a cloud VM is required. The server must accept and properly
   // route `GET /{releaseChannel}/{...path}` requests.

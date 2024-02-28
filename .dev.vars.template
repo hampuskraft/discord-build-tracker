@@ -1,3 +1,7 @@
+# If set to `true`, we'll ignore the `DISCORD_APP_PROXY_ENDPOINT` and use
+# Discord's domains directly.
+DEVELOPMENT=true
+
 # Discord blocks Cloudflare Workers from accessing app assets, so a proxy
 # running on a cloud VM is required. The server must accept and properly
 # route `GET /{releaseChannel}/{...path}` requests.

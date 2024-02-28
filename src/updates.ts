@@ -1,6 +1,6 @@
 import {BUILD_INFO_REGEX, ReleaseChannel, ReleaseChannelToString, SCRIP_TAG_REGEX, USER_AGENT} from './constants';
 import {BuildRow, Env} from './types';
-import {getReleaseChannelRoleId, getReleaseChannelWebhookUrl} from './utils';
+import {getFormattedAppEndpoint, getReleaseChannelRoleId, getReleaseChannelWebhookUrl} from './utils';
 
 export async function handleBuildUpdate(releaseChannel: ReleaseChannel, env: Env): Promise<void> {
   const getBuildStmt = env.DB.prepare('select * from builds where channel=? order by timestamp desc limit 1');
@@ -59,7 +59,7 @@ export async function handleBuildUpdate(releaseChannel: ReleaseChannel, env: Env
 }
 
 async function getVersionHash(releaseChannel: ReleaseChannel, env: Env): Promise<string> {
-  const response = await fetch(`${env.DISCORD_APP_PROXY_ENDPOINT}/${releaseChannel}/app`, {
+  const response = await fetch(getFormattedAppEndpoint(releaseChannel, env) + '/app', {
     headers: {'User-Agent': USER_AGENT},
   });
   const buildId = response.headers.get('X-Build-Id');
@@ -70,7 +70,7 @@ async function getVersionHash(releaseChannel: ReleaseChannel, env: Env): Promise
 }
 
 async function getBuildNumber(releaseChannel: ReleaseChannel, env: Env): Promise<number> {
-  const response = await fetch(`${env.DISCORD_APP_PROXY_ENDPOINT}/${releaseChannel}/app`, {
+  const response = await fetch(getFormattedAppEndpoint(releaseChannel, env) + '/app', {
     headers: {'User-Agent': USER_AGENT},
   });
   const html = await response.text();
@@ -80,7 +80,7 @@ async function getBuildNumber(releaseChannel: ReleaseChannel, env: Env): Promise
     srcValues.unshift(matches[1]);
   }
   for (const value of srcValues) {
-    const response = await fetch(`${env.DISCORD_APP_PROXY_ENDPOINT}/${releaseChannel}/${value}`, {
+    const response = await fetch(getFormattedAppEndpoint(releaseChannel, env) + `/${value}`, {
       headers: {'User-Agent': USER_AGENT},
     });
     const js = await response.text();
