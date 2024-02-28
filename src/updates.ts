@@ -1,4 +1,4 @@
-import {BUILD_INFO_REGEX, ReleaseChannel, ReleaseChannelToString, SCRIP_TAG_REGEX, USER_AGENT} from './constants';
+import {BUILD_INFO_REGEX, ReleaseChannel, ReleaseChannelToString, SCRIPT_TAG_REGEX, USER_AGENT} from './constants';
 import {BuildRow, Env} from './types';
 import {getFormattedAppEndpoint, getReleaseChannelRoleId, getReleaseChannelWebhookUrl} from './utils';
 
@@ -76,7 +76,7 @@ async function getBuildNumber(releaseChannel: ReleaseChannel, env: Env): Promise
   const html = await response.text();
   let matches;
   let srcValues = [];
-  while ((matches = SCRIP_TAG_REGEX.exec(html)) !== null) {
+  while ((matches = SCRIPT_TAG_REGEX.exec(html)) !== null) {
     srcValues.unshift(matches[1]);
   }
   for (const value of srcValues) {
