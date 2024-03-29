@@ -1,27 +1,27 @@
 import {IRequestStrict, error, json} from 'itty-router';
-import {z} from 'zod';
 import {ReleaseChannel} from './constants';
+import {handleLatestPathSchema, handleSearchQuerySchema} from './schemas';
 import {BuildRow, Env} from './types';
 import {getBuildResponse} from './utils';
 
 export async function handleStats(_request: IRequestStrict, env: Env): Promise<Response> {
   return json({
-    total: await env.DB.prepare('select count(*) as count from builds').first('count'),
-    stable: await env.DB.prepare('select count(*) as count from builds where channel=?')
+    total: await env.DB.prepare('SELECT COUNT(*) AS count FROM builds').first('count'),
+    stable: await env.DB.prepare('SELECT COUNT(*) AS count FROM builds WHERE channel = ?')
       .bind(ReleaseChannel.Stable)
       .first('count'),
-    ptb: await env.DB.prepare('select count(*) as count from builds where channel=?')
+    ptb: await env.DB.prepare('SELECT COUNT(*) AS count FROM builds WHERE channel = ?')
       .bind(ReleaseChannel.Ptb)
       .first('count'),
-    canary: await env.DB.prepare('select count(*) as count from builds where channel=?')
+    canary: await env.DB.prepare('SELECT COUNT(*) AS count FROM builds WHERE channel = ?')
       .bind(ReleaseChannel.Canary)
       .first('count'),
-    rollback: await env.DB.prepare('select count(*) as count from builds where rollback=1').first('count'),
+    rollback: await env.DB.prepare('SELECT COUNT(*) AS count FROM builds WHERE rollback = 1').first('count'),
   });
 }
 
 export async function handleLatestAll(_request: IRequestStrict, env: Env): Promise<Response> {
-  const stmt = env.DB.prepare('select * from builds where channel=? order by timestamp desc limit 1');
+  const stmt = env.DB.prepare('SELECT * FROM builds WHERE channel = ? ORDER BY timestamp DESC LIMIT 1');
   const canary = await stmt.bind(ReleaseChannel.Canary).first<BuildRow>();
   const ptb = await stmt.bind(ReleaseChannel.Ptb).first<BuildRow>();
   const stable = await stmt.bind(ReleaseChannel.Stable).first<BuildRow>();
@@ -32,13 +32,9 @@ export async function handleLatestAll(_request: IRequestStrict, env: Env): Promi
   });
 }
 
-const handleLatestPathSchema = z.object({
-  type: z.nativeEnum(ReleaseChannel),
-});
-
 export async function handleLatest(request: IRequestStrict, env: Env): Promise<Response> {
   const params = handleLatestPathSchema.parse(request.params);
-  const stmt = env.DB.prepare('select * from builds where channel=? order by timestamp desc limit 1');
+  const stmt = env.DB.prepare('SELECT * FROM builds WHERE channel = ? ORDER BY timestamp DESC LIMIT 1');
   const result = await stmt.bind(params.type).first<BuildRow>();
   if (!result) {
     return error(404, 'No builds found');
@@ -46,34 +42,24 @@ export async function handleLatest(request: IRequestStrict, env: Env): Promise<R
   return json(getBuildResponse(result));
 }
 
-const handleSearchQuerySchema = z.object({
-  type: z.nativeEnum(ReleaseChannel).optional(),
-  before: z.preprocess(Number, z.number().positive().int()).optional(),
-  after: z.preprocess(Number, z.number().positive().int()).optional(),
-  limit: z.preprocess(Number, z.number().int().positive().max(1000)).default(100),
-  rollback: z
-    .enum(['true', 'false'])
-    .transform((value) => (value === 'true' ? 1 : 0))
-    .optional(),
-});
-
 export async function handleSearch(request: IRequestStrict, env: Env): Promise<Response> {
   const params = handleSearchQuerySchema.parse(request.query);
   const stmt = env.DB.prepare(
     [
-      'select * from builds',
-      params.type ? 'where channel=?' : '',
-      params.before ? 'and timestamp<?' : '',
-      params.after ? `${params.before ? 'and' : 'where'} timestamp>?` : '',
-      params.rollback !== undefined ? `${params.before || params.after ? 'and' : 'where'} rollback=?` : '',
-      'order by timestamp desc limit ?',
+      'SELECT * FROM builds',
+      params.type || params.before || params.after || params.rollback !== undefined ? 'WHERE 1 = 1' : '',
+      params.type ? 'AND channel = ?' : '',
+      params.before ? 'AND timestamp < ?' : '',
+      params.after ? 'AND timestamp > ?' : '',
+      params.rollback !== undefined ? 'AND rollback = ?' : '',
+      'ORDER BY timestamp DESC LIMIT ?',
     ]
       .filter((part) => part)
       .join(' '),
   );
-  const args = [params.type, params.before, params.after, params.rollback, params.limit].filter((arg) => {
-    return arg !== undefined;
-  });
+  const args = [params.type, params.before, params.after, params.rollback, params.limit].filter(
+    (arg) => arg !== undefined,
+  );
   const result = await stmt.bind(...args).all<BuildRow>();
   return json(result.results.map(getBuildResponse));
 }

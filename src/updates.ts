@@ -3,7 +3,7 @@ import {BuildRow, Env} from './types';
 import {getFormattedAppEndpoint, getReleaseChannelRoleId, getReleaseChannelWebhookUrl} from './utils';
 
 export async function handleBuildUpdate(releaseChannel: ReleaseChannel, env: Env): Promise<void> {
-  const getBuildStmt = env.DB.prepare('select * from builds where channel=? order by timestamp desc limit 1');
+  const getBuildStmt = env.DB.prepare('SELECT * FROM builds WHERE channel = ? ORDER BY timestamp DESC LIMIT 1');
   const prevBuild = await getBuildStmt.bind(releaseChannel).first<BuildRow>();
   const versionHash = await getVersionHash(releaseChannel, env);
   if (prevBuild && versionHash === prevBuild.version_hash) {
@@ -53,7 +53,7 @@ export async function handleBuildUpdate(releaseChannel: ReleaseChannel, env: Env
   });
 
   const insertStmt = env.DB.prepare(
-    'insert into builds (channel, build_number, version_hash, timestamp, rollback) values (?, ?, ?, ?, ?)',
+    'INSERT INTO builds (channel, build_number, version_hash, timestamp, rollback) VALUES (?, ?, ?, ?, ?)',
   );
   await insertStmt.bind(releaseChannel, buildNumber, versionHash, Date.now(), rollback ? 1 : 0).run();
 }

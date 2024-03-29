@@ -11,13 +11,13 @@
     "start": "wrangler dev --test-scheduled"
   },
   "dependencies": {
-    "itty-router": "4.0.27",
+    "itty-router": "4.2.2",
     "zod": "3.22.4"
   },
   "devDependencies": {
-    "@cloudflare/workers-types": "4.20240222.0",
+    "@cloudflare/workers-types": "4.20240320.1",
     "prettier-plugin-organize-imports": "3.2.4",
-    "typescript": "5.3.3",
-    "wrangler": "3.30.0"
+    "typescript": "5.4.3",
+    "wrangler": "3.40.0"
   }
 }
