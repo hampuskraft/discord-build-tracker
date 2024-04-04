@@ -6,11 +6,11 @@ import type {Env} from './types';
 import {handleBuildUpdate} from './updates';
 
 export default {
-  async fetch(request: Request, env: Env, ctx: ExecutionContext): Promise<Response> {
+  async fetch(request, env, ctx) {
     return router
       .handle(request, env, ctx)
       .then(json)
-      .catch((err) => {
+      .catch((err: Error) => {
         if (err instanceof z.ZodError) {
           return error(400, err.errors.map((error) => error.message).join('\n'));
         }
@@ -18,9 +18,9 @@ export default {
       });
   },
 
-  async scheduled(_event: ScheduledEvent, env: Env, _ctx: ExecutionContext): Promise<void> {
+  async scheduled(_event, env, _ctx) {
     await handleBuildUpdate(ReleaseChannel.Canary, env);
     await handleBuildUpdate(ReleaseChannel.Ptb, env);
     await handleBuildUpdate(ReleaseChannel.Stable, env);
   },
-};
+} satisfies ExportedHandler<Env>;
