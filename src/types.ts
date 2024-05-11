@@ -1,6 +1,6 @@
 import {ReleaseChannel} from './constants';
 
-export type Env = {
+export type EnvVariables = {
   // If set to `true`, we'll ignore the `DISCORD_APP_PROXY_ENDPOINT` and use
   // Discord's domains directly.
   DEVELOPMENT?: string;
@@ -18,8 +18,6 @@ export type Env = {
 
   STABLE_ROLE_ID: string;
   STABLE_WEBHOOK_URL: string;
-
-  DB: D1Database;
 };
 
 export type BuildRow = {

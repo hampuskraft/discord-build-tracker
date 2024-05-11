@@ -1,7 +1,7 @@
 import {ReleaseChannel} from './constants';
-import {BuildResponse, BuildRow, Env} from './types';
+import {BuildResponse, BuildRow, EnvVariables} from './types';
 
-export function getReleaseChannelRoleId(channel: ReleaseChannel, env: Env): string {
+export function getReleaseChannelRoleId(channel: ReleaseChannel, env: EnvVariables): string {
   switch (channel) {
     case ReleaseChannel.Canary:
       return env.CANARY_ROLE_ID;
@@ -12,7 +12,7 @@ export function getReleaseChannelRoleId(channel: ReleaseChannel, env: Env): stri
   }
 }
 
-export function getReleaseChannelWebhookUrl(channel: ReleaseChannel, env: Env): string {
+export function getReleaseChannelWebhookUrl(channel: ReleaseChannel, env: EnvVariables): string {
   switch (channel) {
     case ReleaseChannel.Canary:
       return env.CANARY_WEBHOOK_URL;
@@ -33,7 +33,7 @@ export function getBuildResponse(row: BuildRow): BuildResponse {
   };
 }
 
-export function getFormattedAppEndpoint(channel: ReleaseChannel, env: Env): string {
+export function getFormattedAppEndpoint(channel: ReleaseChannel, env: EnvVariables): string {
   if (env.DEVELOPMENT !== 'true') {
     return `${env.DISCORD_APP_PROXY_ENDPOINT}/${channel}`;
   }
