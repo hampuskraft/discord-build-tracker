@@ -1,24 +1,12 @@
-import {
-	BUILD_INFO_REGEX,
-	type ReleaseChannel,
-	ReleaseChannelToString,
-	SCRIPT_TAG_REGEX,
-	USER_AGENT,
-} from "./constants";
-import type { BuildRow, EnvVariables } from "./types";
-import {
-	getFormattedAppEndpoint,
-	getReleaseChannelRoleId,
-	getReleaseChannelWebhookUrl,
-} from "./utils";
+import {BUILD_INFO_REGEX, type ReleaseChannel, ReleaseChannelToString, SCRIPT_TAG_REGEX, USER_AGENT} from './constants';
+import type {BuildRow, EnvVariables} from './types';
+import {getFormattedAppEndpoint, getReleaseChannelRoleId, getReleaseChannelWebhookUrl} from './utils';
 
 export async function handleBuildUpdate(
 	releaseChannel: ReleaseChannel,
-	env: EnvVariables & { DB: D1Database },
+	env: EnvVariables & {DB: D1Database},
 ): Promise<void> {
-	const getBuildStmt = env.DB.prepare(
-		"SELECT * FROM builds WHERE channel = ? ORDER BY timestamp DESC LIMIT 1",
-	);
+	const getBuildStmt = env.DB.prepare('SELECT * FROM builds WHERE channel = ? ORDER BY timestamp DESC LIMIT 1');
 	const prevBuild = await getBuildStmt.bind(releaseChannel).first<BuildRow>();
 	const versionHash = await getVersionHash(releaseChannel, env);
 	if (prevBuild && versionHash === prevBuild.version_hash) {
@@ -42,25 +30,25 @@ export async function handleBuildUpdate(
 		description,
 		fields: [
 			{
-				name: "Build Number",
+				name: 'Build Number',
 				value: buildNumber,
 				inline: true,
 			},
 			{
-				name: "Version Hash (Short)",
+				name: 'Version Hash (Short)',
 				value: versionHash.slice(0, 7),
 				inline: true,
 			},
 			{
-				name: "Version Hash",
+				name: 'Version Hash',
 				value: versionHash,
 			},
 		],
 	};
 
 	await fetch(getReleaseChannelWebhookUrl(releaseChannel, env), {
-		method: "POST",
-		headers: { "Content-Type": "application/json" },
+		method: 'POST',
+		headers: {'Content-Type': 'application/json'},
 		body: JSON.stringify({
 			content: `<@&${getReleaseChannelRoleId(releaseChannel, env)}>`,
 			embeds: [embed],
@@ -68,46 +56,26 @@ export async function handleBuildUpdate(
 	});
 
 	const insertStmt = env.DB.prepare(
-		"INSERT INTO builds (channel, build_number, version_hash, timestamp, rollback) VALUES (?, ?, ?, ?, ?)",
+		'INSERT INTO builds (channel, build_number, version_hash, timestamp, rollback) VALUES (?, ?, ?, ?, ?)',
 	);
-	await insertStmt
-		.bind(
-			releaseChannel,
-			buildNumber,
-			versionHash,
-			Date.now(),
-			rollback ? 1 : 0,
-		)
-		.run();
+	await insertStmt.bind(releaseChannel, buildNumber, versionHash, Date.now(), rollback ? 1 : 0).run();
 }
 
-async function getVersionHash(
-	releaseChannel: ReleaseChannel,
-	env: EnvVariables,
-): Promise<string> {
-	const response = await fetch(
-		`${getFormattedAppEndpoint(releaseChannel, env)}/app`,
-		{
-			headers: { "User-Agent": USER_AGENT },
-		},
-	);
-	const buildId = response.headers.get("X-Build-Id");
+async function getVersionHash(releaseChannel: ReleaseChannel, env: EnvVariables): Promise<string> {
+	const response = await fetch(`${getFormattedAppEndpoint(releaseChannel, env)}/app`, {
+		headers: {'User-Agent': USER_AGENT},
+	});
+	const buildId = response.headers.get('X-Build-Id');
 	if (!buildId) {
-		throw new Error("No build ID found");
+		throw new Error('No build ID found');
 	}
 	return buildId;
 }
 
-async function getBuildNumber(
-	releaseChannel: ReleaseChannel,
-	env: EnvVariables,
-): Promise<number> {
-	const response = await fetch(
-		`${getFormattedAppEndpoint(releaseChannel, env)}/app`,
-		{
-			headers: { "User-Agent": USER_AGENT },
-		},
-	);
+async function getBuildNumber(releaseChannel: ReleaseChannel, env: EnvVariables): Promise<number> {
+	const response = await fetch(`${getFormattedAppEndpoint(releaseChannel, env)}/app`, {
+		headers: {'User-Agent': USER_AGENT},
+	});
 	const html = await response.text();
 	const srcValues = [];
 	let matches = SCRIPT_TAG_REGEX.exec(html);
@@ -116,17 +84,14 @@ async function getBuildNumber(
 		matches = SCRIPT_TAG_REGEX.exec(html);
 	}
 	for (const value of srcValues) {
-		const response = await fetch(
-			`${getFormattedAppEndpoint(releaseChannel, env)}/${value}`,
-			{
-				headers: { "User-Agent": USER_AGENT },
-			},
-		);
+		const response = await fetch(`${getFormattedAppEndpoint(releaseChannel, env)}/${value}`, {
+			headers: {'User-Agent': USER_AGENT},
+		});
 		const js = await response.text();
 		const match = js.match(BUILD_INFO_REGEX);
 		if (match?.groups) {
 			return Number(match.groups.build_number);
 		}
 	}
-	throw new Error("No build info found");
+	throw new Error('No build info found');
 }

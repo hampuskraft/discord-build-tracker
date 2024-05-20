@@ -1,4 +1,4 @@
-import type { ReleaseChannel } from "./constants";
+import type {ReleaseChannel} from './constants';
 
 export type EnvVariables = {
 	// If set to `true`, we'll ignore the `DISCORD_APP_PROXY_ENDPOINT` and use

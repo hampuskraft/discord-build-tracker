@@ -1,10 +1,7 @@
-import { ReleaseChannel } from "./constants";
-import type { BuildResponse, BuildRow, EnvVariables } from "./types";
+import {ReleaseChannel} from './constants';
+import type {BuildResponse, BuildRow, EnvVariables} from './types';
 
-export function getReleaseChannelRoleId(
-	channel: ReleaseChannel,
-	env: EnvVariables,
-): string {
+export function getReleaseChannelRoleId(channel: ReleaseChannel, env: EnvVariables): string {
 	switch (channel) {
 		case ReleaseChannel.Canary:
 			return env.CANARY_ROLE_ID;
@@ -15,10 +12,7 @@ export function getReleaseChannelRoleId(
 	}
 }
 
-export function getReleaseChannelWebhookUrl(
-	channel: ReleaseChannel,
-	env: EnvVariables,
-): string {
+export function getReleaseChannelWebhookUrl(channel: ReleaseChannel, env: EnvVariables): string {
 	switch (channel) {
 		case ReleaseChannel.Canary:
 			return env.CANARY_WEBHOOK_URL;
@@ -39,19 +33,16 @@ export function getBuildResponse(row: BuildRow): BuildResponse {
 	};
 }
 
-export function getFormattedAppEndpoint(
-	channel: ReleaseChannel,
-	env: EnvVariables,
-): string {
-	if (env.DEVELOPMENT !== "true") {
+export function getFormattedAppEndpoint(channel: ReleaseChannel, env: EnvVariables): string {
+	if (env.DEVELOPMENT !== 'true') {
 		return `${env.DISCORD_APP_PROXY_ENDPOINT}/${channel}`;
 	}
 	switch (channel) {
 		case ReleaseChannel.Canary:
-			return "https://canary.discord.com";
+			return 'https://canary.discord.com';
 		case ReleaseChannel.Ptb:
-			return "https://ptb.discord.com";
+			return 'https://ptb.discord.com';
 		case ReleaseChannel.Stable:
-			return "https://discord.com";
+			return 'https://discord.com';
 	}
 }
